@@ -13,7 +13,7 @@ const SearchBar = ({ data }) => {
 
     navigate('/course-list/' + input)
   }
-
+  
   return (
 
     <form onSubmit={onSearchHandler} className='max-w-xl w-full md:h-14 h-12 flex items-center bg-white border border-gray-500/20 rounded'>
