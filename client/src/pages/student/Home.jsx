@@ -5,6 +5,7 @@ import CoursesSection from '../../components/student/CoursesSection';
 import TestimonialsSection from '../../components/student/TestimonialsSection';
 import  CallToAction  from '../../components/student/CallToAction';
 import Footer from '../../components/student/Footer';
+import CourseDetails from './CourseDetails';
 
 export default function Home()  {
   return (
