@@ -2,7 +2,7 @@
   "name": "server",
   "version": "1.0.0",
   "main": "server.js",
-  "type":"module",
+  "type": "module",
   "scripts": {
     "server": "nodemon server.js",
     "start": "node server.js"
@@ -19,8 +19,10 @@
     "express": "^5.1.0",
     "mongoose": "^8.15.1",
     "multer": "^2.0.1",
+    "node-fetch": "^3.3.2",
     "nodemon": "^3.1.10",
     "stripe": "^18.2.1",
-    "svix": "^1.42.0"
+    "svix": "^1.42.0",
+    "svix-fetch": "^4.0.0"
   }
 }
