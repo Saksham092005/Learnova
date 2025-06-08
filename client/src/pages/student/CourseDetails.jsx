@@ -1,27 +1,38 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { AppContext } from '../../context/AppContext'
-import Loading from '../../components/student/Loading'
-import { assets } from '../../assets/assets'
-import CourseCard from '../../components/student/CourseCard'
+import React, { useContext, useEffect, useState } from 'react';
+import Footer from '../../components/student/Footer';
+import { assets } from '../../assets/assets';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import { AppContext } from '../../context/AppContext';
+import { toast } from 'react-toastify';
 import humanizeDuration from 'humanize-duration'
-import Footer from '../../components/student/Footer'
-import YouTube from 'react-youtube' 
-
+import YouTube from 'react-youtube';
+import { useAuth } from '@clerk/clerk-react';
+import Loading from '../../components/student/Loading';
 const CourseDetails = () => {
   const { id } = useParams()
-  const { allCourses, calculateRating, calculateChapterTime, calculateCourseDuration, calculateNoOfLectures , currency } = useContext(AppContext)
+  const { allCourses, calculateRating, calculateChapterTime, calculateCourseDuration, calculateNoOfLectures, currency, backendUrl, userData,getToken } = useContext(AppContext)
   const [courseData, setCourseData] = useState(null)
   const [openSections, setOpenSections] = useState({})
-  const [isAlreadyEnrolled , setIsAlreadyEnrolled] = useState(false)
-  const [playerData,setPlayerData] = useState(null)
+  const [isAlreadyEnrolled, setIsAlreadyEnrolled] = useState(false)
+  const [playerData, setPlayerData] = useState(null)
 
   const fetchCourseData = async () => {
-    if (!allCourses || allCourses.length === 0) return
+    try {
 
-    // 🔑 match against `_id` (not `id`)
-    const findCourse = allCourses.find(course => course._id === id)
-    setCourseData(findCourse)
+      const { data } = await axios.get(backendUrl + '/api/course/' + id)
+
+      if (data.success) {
+        setCourseData(data.courseData)
+      } else {
+        toast.error(data.message)
+      }
+
+    } catch (error) {
+
+      toast.error(error.message)
+
+    }
   }
 
   const toggleSection = (index) => {
@@ -31,11 +42,49 @@ const CourseDetails = () => {
     }));
   };
 
+
+  const enrollCourse = async () => {
+
+    try {
+
+      if (!userData) {
+        return toast.warn('Login to Enroll')
+      }
+
+      if (isAlreadyEnrolled) {
+        return toast.warn('Already Enrolled')
+      }
+
+      const token = await getToken();
+
+      const { data } = await axios.post(backendUrl + '/api/user/purchase',
+        { courseId: courseData._id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+
+      if (data.success) {
+        const { session_url } = data
+        window.location.replace(session_url)
+      } else {
+        toast.error(data.message)
+      }
+
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
+
   useEffect(() => {
     fetchCourseData()
-  }, [allCourses, id])  // re-run when courses or id change
+  }, [])
 
+  useEffect(() => {
 
+    if (userData && courseData) {
+      setIsAlreadyEnrolled(userData.enrolledCourses.includes(courseData._id))
+    }
+
+  }, [userData, courseData])
 
   return courseData ? (
     <>
@@ -69,7 +118,7 @@ const CourseDetails = () => {
             <p>{courseData.enrolledStudents.length} {courseData.enrolledStudents.length > 1 ? 'students' : 'student'}</p>
           </div>
 
-          <p className='text-sm'>Course by <span className='text-blue-600 underline'>saksham</span></p>
+          <p className='text-sm'>Course by <span className='text-blue-600 underline'>{courseData.educator.name}</span></p>
 
 
           <div className="pt-8 text-gray-800">
@@ -169,11 +218,11 @@ const CourseDetails = () => {
               </div>
 
             </div>
-            <button  className="md:mt-6 mt-4 w-full py-3 rounded bg-blue-600 text-white font-medium">
+            <button onClick={enrollCourse} className="md:mt-6 mt-4 w-full py-3 rounded bg-blue-600 text-white font-medium">
               {isAlreadyEnrolled ? "Already Enrolled" : "Enroll Now"}
             </button>
 
-            
+
             <div className="pt-6">
               <p className="md:text-xl text-lg font-medium text-gray-800">What's in the course?</p>
               <ul className="ml-4 pt-2 text-sm md:text-default list-disc text-gray-500">
@@ -189,7 +238,7 @@ const CourseDetails = () => {
 
       </div>
 
-      <Footer/>
+      <Footer />
     </>
   ) : (
     <Loading />
