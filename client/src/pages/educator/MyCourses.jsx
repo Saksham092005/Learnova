@@ -1,22 +1,41 @@
-import React, { useCallback, useContext, useEffect ,useState } from 'react'
-import { AppContext } from '../../context/AppContext'
-import Loading from '../../components/student/Loading'
 
+
+
+import React, { useContext, useEffect, useState } from 'react';
+import { AppContext } from '../../context/AppContext';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import Loading from '../../components/student/Loading';
 
 const MyCourses = () => {
 
+  const { backendUrl, isEducator, currency, getToken } = useContext(AppContext)
 
   const [courses, setCourses] = useState(null)
-  const {currency , allCourses} = useContext(AppContext)
 
-  const fetchEducatorCourses = async ()=>{
-    setCourses(allCourses)
+  const fetchEducatorCourses = async () => {
+
+    try {
+
+      const token = await getToken()
+
+      const { data } = await axios.get(backendUrl + '/api/educator/courses', { headers: { Authorization: `Bearer ${token}` } })
+
+      data.success && setCourses(data.courses)
+
+    } catch (error) {
+      toast.error(error.message)
+    }
+
   }
 
-  useEffect(()=>{
-    fetchEducatorCourses()
-  },[])
-  return courses?(
+  useEffect(() => {
+    if (isEducator) {
+      fetchEducatorCourses()
+    }
+  }, [isEducator])
+
+  return courses ? (
     <div className="h-screen flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0">
       <div className='w-full'>
         <h2 className="pb-4 text-lg font-medium">My Courses</h2>
@@ -49,7 +68,7 @@ const MyCourses = () => {
         </div>
       </div>
     </div>
-  ):<Loading/>
-}
+  ) : <Loading />
+};
 
-export default MyCourses
+export default MyCourses;

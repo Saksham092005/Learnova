@@ -1,22 +1,43 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { AppContext } from '../../context/AppContext';
-import Loading from '../../components/student/Loading';
-import { dummyStudentEnrolled } from '../../assets/assets';
 
+
+
+import React, { useContext, useEffect, useState } from 'react';
+import axios from 'axios';
+import { AppContext } from '../../context/AppContext';
+import { toast } from 'react-toastify';
+import Loading from '../../components/student/Loading';
 
 const StudentsEnrolled = () => {
 
+  const { backendUrl, getToken, isEducator } = useContext(AppContext)
 
   const [enrolledStudents, setEnrolledStudents] = useState(null)
-  const { currency, allCourses } = useContext(AppContext)
 
   const fetchEnrolledStudents = async () => {
-    setEnrolledStudents(dummyStudentEnrolled)
+    try {
+      const token = await getToken()
+
+      const { data } = await axios.get(backendUrl + '/api/educator/enrolled-students',
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+
+      if (data.success) {
+        setEnrolledStudents(data.enrolledStudents.reverse())
+      } else {
+        toast.success(data.message)
+      }
+
+    } catch (error) {
+      toast.error(error.message)
+    }
   }
 
   useEffect(() => {
-    fetchEnrolledStudents()
-  }, [])
+    if (isEducator) {
+      fetchEnrolledStudents()
+    }
+  }, [isEducator])
+
   return enrolledStudents ? (
     <div className="min-h-screen flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0">
       <div className="flex flex-col items-center max-w-4xl w-full overflow-hidden rounded-md bg-white border border-gray-500/20 ">
@@ -50,6 +71,6 @@ const StudentsEnrolled = () => {
       </div>
     </div>
   ) : <Loading />
-}
+};
 
-export default StudentsEnrolled
+export default StudentsEnrolled;

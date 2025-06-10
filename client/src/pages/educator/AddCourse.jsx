@@ -1,12 +1,17 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { assets } from '../../assets/assets';
-import uniqid from 'uniqid'
-import Quill from 'quill'
+import { toast } from 'react-toastify'
+import Quill from 'quill';
+import uniqid from 'uniqid';
+import axios from 'axios'
+import { AppContext } from '../../context/AppContext';
 
 const AddCourse = () => {
 
-  const quillRef = useRef(null)
-  const editorRef = useRef(null)
+  const editorRef = useRef(null);
+  const quillRef = useRef(null);
+
+  const { backendUrl, getToken } = useContext(AppContext)
 
   const [courseTitle, setCourseTitle] = useState('')
   const [coursePrice, setCoursePrice] = useState(0)
@@ -21,6 +26,7 @@ const AddCourse = () => {
     lectureUrl: '',
     isPreviewFree: false,
   });
+
   const handleChapter = (action, chapterId) => {
     if (action === 'add') {
       const title = prompt('Enter Chapter Name:');
@@ -84,16 +90,50 @@ const AddCourse = () => {
     });
   };
 
-
   const handleSubmit = async (e) => {
+    try {
 
+      e.preventDefault();
 
-    e.preventDefault();
+      if (!image) {
+        toast.error('Thumbnail Not Selected')
+      }
 
+      const courseData = {
+        courseTitle,
+        courseDescription: quillRef.current.root.innerHTML,
+        coursePrice: Number(coursePrice),
+        discount: Number(discount),
+        courseContent: chapters,
+      }
 
+      const formData = new FormData()
+      formData.append('courseData', JSON.stringify(courseData))
+      formData.append('image', image)
+
+      const token = await getToken()
+
+      const { data } = await axios.post(backendUrl + '/api/educator/add-course', formData,
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+
+      if (data.success) {
+        toast.success(data.message)
+        setCourseTitle('')
+        setCoursePrice(0)
+        setDiscount(0)
+        setImage(null)
+        setChapters([])
+        quillRef.current.root.innerHTML = ""
+      } else (
+        toast.error(data.message)
+      )
+
+    } catch (error) {
+      toast.error(error.message)
+    }
 
   };
-
 
   useEffect(() => {
     // Initiate Quill only once
@@ -104,6 +144,9 @@ const AddCourse = () => {
     }
   }, []);
 
+  useEffect(() => {
+    console.log(chapters);
+  }, [chapters]);
 
   return (
     <div className='h-screen overflow-scroll flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0'>
@@ -224,4 +267,4 @@ const AddCourse = () => {
   );
 };
 
-export default AddCourse
+export default AddCourse;
