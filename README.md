@@ -25,7 +25,11 @@ Learnova is a modern Learning Management System (LMS) that enables users to **le
 
 ---
 
+## 🖼️ Screenshots
 
+| Landing Page | Course View | Educator Dashboard |
+|--------------|-------------|---------------------|
+| ![](screenshots/landing.png) | ![](screenshots/course_description.png) | ![](screenshots/educator_dashboard.png) |
 ---
 
 ## 🛠️ Tech Stack
