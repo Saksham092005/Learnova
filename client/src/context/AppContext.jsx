@@ -150,7 +150,7 @@ export const AppContextProvider = (props) => {
         
     }, [])
 
-    //  const logToken = async ()=>{
+    //  const log   Token = async ()=>{
     //     console.log(await getToken());
     //  }
 
