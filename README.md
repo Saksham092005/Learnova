@@ -17,13 +17,7 @@ Learnova is a modern Learning Management System (LMS) that enables users to **le
 - 📱 Fully responsive design
 - 🔎 Search and filter functionality for exploring courses
 
----
 
-## 🌐 Live Demo
-
-👉 [Visit Learnova](https://learnova-frontend.vercel.app/)
-
----
 
 ## 🖼️ Screenshots
 
