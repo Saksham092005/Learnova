@@ -1,4 +1,6 @@
 
+// CourseCard is a reusable component that displays a single course’s thumbnail, title, educator name, star rating, number of ratings, and price. When clicked, it takes the student to that course’s detail page.
+
 
 
 

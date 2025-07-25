@@ -71,4 +71,6 @@ const MyCourses = () => {
   ) : <Loading />
 };
 
+
+
 export default MyCourses;

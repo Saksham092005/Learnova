@@ -10,7 +10,7 @@ const Footer = () => {
         <div className="flex flex-col md:items-start items-center w-full">
           <img src={logoLearnovo} alt="logo" />
           <p className="mt-6 text-center md:text-left text-sm text-white/80">
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text.
+            Learn on your schedule, at your pace. Join thousands of learners building real skills for real-world success.
           </p>
         </div>
 

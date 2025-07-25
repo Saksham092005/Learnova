@@ -21,3 +21,7 @@ const Educator = () => {
 }
 
 export default Educator
+
+
+
+// this is the parent route that is whenever we call educator it will render this component and then it will see child routes and render them accordingly at the outlet thing.
