@@ -3,7 +3,6 @@ import { addCourse, educatorDashboardData, getEducatorCourses, getEnrolledStuden
 import upload from '../configs/multer.js'
 import { protectEducator } from '../middlewares/authMiddleware.js'
 
-import multer from '../configs/multer.js';
 
 
 
@@ -17,7 +16,7 @@ educatorRouter.get('/update-role', updateRoleToEducator)
 educatorRouter.post(
   '/add-course',
   protectEducator,
-  multer.single('thumbnail'),
+  upload.single('image'),
   addCourse
 );
 
